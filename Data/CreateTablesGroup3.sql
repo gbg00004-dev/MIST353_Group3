@@ -6,8 +6,8 @@ IF (OBJECT_ID('RequestStatus') IS NOT NULL)
     DROP TABLE RequestStatus;
 IF (OBJECT_ID('Request') IS NOT NULL)
     DROP TABLE Request;
-IF (OBJECT_ID('MTSkills') IS NOT NULL)
-    DROP TABLE MTSkills;
+IF (OBJECT_ID('MaintenanceTechSkills') IS NOT NULL)
+    DROP TABLE MaintenanceTechSkills;
 IF (OBJECT_ID('MaintenanceTech') IS NOT NULL)
     DROP TABLE MaintenanceTech;
 IF (OBJECT_ID('MaintenanceSupervisor') IS NOT NULL)
@@ -18,72 +18,75 @@ IF (OBJECT_ID('Requester') IS NOT NULL)
 go
 
 CREATE TABLE Requester (
-    RID INT PRIMARY KEY IDENTITY(1,1),
-    RFName VARCHAR(100) NOT NULL,
-    RFEmail VARCHAR(100),
-    RFPhone VARCHAR(20)
+    RequesterID INT PRIMARY KEY IDENTITY(1,1),
+    RequesterFirstName VARCHAR(100) NOT NULL,
+    RequesterLastName VARCHAR(100) NOT NULL,
+    RequesterEmail VARCHAR(100),
+    RequesterPhone VARCHAR(20)
 );
 
 go
 
 CREATE TABLE MaintenanceSupervisor (
-    MSID INT PRIMARY KEY IDENTITY(1,1),
-    MSFName VARCHAR(100) NOT NULL,
-    MSPhone VARCHAR(20)
+    MaintenanceSupervisorID INT PRIMARY KEY IDENTITY(1,1),
+    MaintenanceSupervisorFirstName VARCHAR(100) NOT NULL,
+    MaintenanceSupervisorLastName VARCHAR(100) NOT NULL,
+    MaintenanceSupervisorPhone VARCHAR(20)
 );
 
 go
 
 CREATE TABLE MaintenanceTech (
-    MTID INT PRIMARY KEY IDENTITY(1,1),
-    MTFName VARCHAR(100) NOT NULL,
-    MTEmail VARCHAR(100),
-    MTCalendar VARCHAR(255),
-    MTCertifications VARCHAR(255),
-    MTPerformance DECIMAL(5,2)
+    MaintenanceTechID INT PRIMARY KEY IDENTITY(1,1),
+    MaintenanceTechFirstName VARCHAR(100) NOT NULL,
+    MaintenanceTechLastName VARCHAR(100) NOT NULL,
+    MaintenanceTechEmail VARCHAR(100),
+    MaintenanceTechCalendar VARCHAR(255),
+    MaintenanceTechCertifications VARCHAR(255),
+    MaintenanceTechPerformance DECIMAL(5,2)
 );
 
 go
 
-CREATE TABLE MTSkills (
-    SkillID INT PRIMARY KEY IDENTITY(1,1),
-    SkillName VARCHAR(100) NOT NULL
+CREATE TABLE MaintenanceTechSkills (
+    MaintenanceTechSkillID INT PRIMARY KEY IDENTITY(1,1),
+    MaintenanceTechSkillName VARCHAR(100) NOT NULL
 );
 
 go
 
 CREATE TABLE TechSkills (
-    MTID INT,
-    SkillID INT,
-    PRIMARY KEY (MTID, SkillID),
-    FOREIGN KEY (MTID) REFERENCES MaintenanceTech(MTID),
-    FOREIGN KEY (SkillID) REFERENCES MTSkills(SkillID)
+    MaintenanceTechID INT,
+    MaintenanceTechSkillID INT,
+    PRIMARY KEY (MaintenanceTechID, MaintenanceTechSkillID),
+    FOREIGN KEY (MaintenanceTechID) REFERENCES MaintenanceTech(MaintenanceTechID),
+    FOREIGN KEY (MaintenanceTechSkillID) REFERENCES MaintenanceTechSkills(MaintenanceTechSkillID)
 );
 
 go
 
 CREATE TABLE Request (
-    RQID INT PRIMARY KEY IDENTITY(1,1),
-    RID INT NOT NULL,
-    MSID INT NULL,
-    RQNotes VARCHAR(500),
-    RQIssue VARCHAR(255),
-    MSApproval BIT DEFAULT 0,
+    RequestID INT PRIMARY KEY IDENTITY(1,1),
+    RequesterID INT NOT NULL,
+    MaintenanceSupervisorID INT NULL,
+    RequestNotes VARCHAR(500),
+    RequestIssue VARCHAR(255),
+    MaintenanceSupervisorApproval BIT DEFAULT 0,
 
-    FOREIGN KEY (RID) REFERENCES Requester(RID),
-    FOREIGN KEY (MSID) REFERENCES MaintenanceSupervisor(MSID)
+    FOREIGN KEY (RequesterID) REFERENCES Requester(RequesterID),
+    FOREIGN KEY (MaintenanceSupervisorID) REFERENCES MaintenanceSupervisor(MaintenanceSupervisorID)
 );
 
 go
 
 CREATE TABLE RequestStatus (
-    StatusID INT PRIMARY KEY IDENTITY(1,1),
-    RQID INT NOT NULL,
-    Status VARCHAR(50),
-    DateStarted DATETIME,
-    DateCompleted DATETIME,
-    MTAssigned INT,
+    RequestStatusID INT PRIMARY KEY IDENTITY(1,1),
+    RequestID INT NOT NULL,
+    RequestStatus VARCHAR(50),
+    RequestDateStarted DATETIME,
+    RequestDateCompleted DATETIME,
+    MaintenanceTechID INT,
 
-    FOREIGN KEY (RQID) REFERENCES Request(RQID),
-    FOREIGN KEY (MTAssigned) REFERENCES MaintenanceTech(MTID)
+    FOREIGN KEY (RequestID) REFERENCES Request(RequestID),
+    FOREIGN KEY (MaintenanceTechID) REFERENCES MaintenanceTech(MaintenanceTechID)
 );
